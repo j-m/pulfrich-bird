@@ -1,13 +1,20 @@
 window.addEventListener('load', function() {
 	var canvas = document.getElementsByTagName("canvas")[0],
 		context = canvas.getContext('2d');
-	var background = new Image();
-	background.src = 'grid.png';
-	background.onload = function() {
-		background = context.createPattern(background, 'repeat');
-	};
+	var grid = new Image();
+	grid.src = 'mountainnew.png';
+
+	var tree = new Image();
+	tree.src = 'grass1.png';
+
+	var tree2 = new Image();
+	tree2.src = 'grass2.png';
+	
+	var bird = new Image();
+	bird.src = 'bird.png';
+
 	var tick = 0;
-	class box{
+	class object{
 		constructor(fill, x, y, depth, w, h){
 			this.fill = fill;
 			this.x = x;
@@ -18,30 +25,40 @@ window.addEventListener('load', function() {
 			this.t = tick;
 		}
 	}
-	box.prototype.draw = function(){
+	object.prototype.draw = function(){
 		context.fillStyle = this.fill;
 		var offset = (tick - this.t) * this.depth;
-		if(this.x - offset < 0) 
+		if(this.x - offset + this.w < 0) 
 			this.t = tick;
-		context.fillRect(this.x - offset, this.y, this.w, this.h);
+		context.drawImage(this.fill, this.x - offset, this.y, this.w, this.h);
 	}
-	
-	
+	class background extends object{
+		constructor(fill, depth){
+			super(fill,0,0,depth,0,0);
+		}
+	}
+	background.prototype.draw = function(){
+		var offset = (tick - this.t) * this.depth;
+		if(this.x - offset + canvas.width < 0) 
+			this.t = tick;
+		
+		var pattern = context.createPattern(this.fill, 'repeat');
+		context.fillStyle = pattern;
+		context.translate(-offset, 0);
+		context.fillRect(0,0,canvas.width*2,canvas.height);
+		context.translate(offset,0);
+	}
 	var objects = [];
-	objects.push(new box("#814a2f", canvas.width,   0,2,120,canvas.height ));
-	objects.push(new box("#814a2f", canvas.width*2, 0,2,120,canvas.height ));
-	for(var item in objects)
-		console.log(objects[item]);
-	var player = new box("#dd0000", canvas.width/2 - 25, canvas.height/2 - 25, 0, 50, 50);
-	(function repeatOften() {
-		requestAnimationFrame(repeatOften);
+	objects.push(new background(grid, 4));
+	objects.push(new background(tree2, 3));
+	objects.push(new background(tree, 2));
+	
+	var player = new object(bird, canvas.width/2 - 25, canvas.height/2 - 25, 0, 50, 50);
+	
+	(function draw() {
+		requestAnimationFrame(draw);
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		tick++;
-		
-		context.translate(-(tick%40)*4,0);
-		context.fillStyle = background;
-		context.fillRect(0,0,canvas.width+40*4,canvas.height);
-		context.translate((tick%40)*4,0);
 		
 		for(var item in objects)
 			objects[item].draw();
