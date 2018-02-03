@@ -1,0 +1,13 @@
+body{
+	display: flex;
+	background: #eee;
+	min-height:100vh;
+	margin:0;
+}
+
+canvas{
+	width:800px;
+	height:600px;
+	margin:auto;
+	background:#fff;
+}
