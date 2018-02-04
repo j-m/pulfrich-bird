@@ -16,9 +16,11 @@ window.addEventListener('load', function() {
 	addImage('floor.png');			//5
 	addImage('rocks.png');			//6
 	addImage('forest4.png');		//7
-	addImage('totem1.png');			//8
-	addImage('totem2.png');			//9
+	addImage('totem2.png');			//8
+	addImage('totem1.png');			//9
 	addImage('totem3.png');			//10
+	addImage('retry1.png');			//11
+	addImage('retry2.png');			//12
 	
 	var tick = 0;
 	class object{
@@ -64,18 +66,57 @@ window.addEventListener('load', function() {
 	backgrounds.push(new background(4, 2));		//floor
 	
 	var objects = [],
-		player = new object(imgs[0], canvas.width/2 - 25, canvas.height/2 - 25, 0, 50, 50),
+		player = new object(imgs[0], canvas.width/2 - 30, canvas.height/2 - 25, 0, 60, 50),
 		velocity = 0,
 		gravity = 0.5,
-		jump = -10,
+		jump = -8,
 		alive = true;
-	objects.push(new object(imgs[8], canvas.width, 0, 2.5, 59, canvas.height));
+	var score = last = best = 0;
 	canvas.onclick = function (event){
 		velocity = jump;
+		if(!alive && within){
+			objects.length = 0;
+			player.y = canvas.height/2 - 30;
+			var tmp = document.createElement("input");
+			document.body.appendChild(tmp);
+			tmp.focus();
+			document.body.removeChild(tmp);
+			alive = true;
+		}
 	}
 	canvas.oncontextmenu = function (e) {
 		e.preventDefault();
 	};
+	function died(){
+		alive = false;
+		objects.length = 0;
+		var x = canvas.width/2-120, y = canvas.height/2-72;
+		objects[0] = new object(imgs[11], x, y, 0, 240, 144);
+		objects[1] = new object(imgs[12], x, y, 0, 240, 144);
+		last = score;
+		if (last > best)
+			best = last;
+		score = 0;
+	}
+	function getMousePos(canvas, evt) {
+		var rect = canvas.getBoundingClientRect();
+		return {
+		  x: evt.clientX - rect.left,
+		  y: evt.clientY - rect.top
+		};
+	}
+	var within = false, next = 0;
+	canvas.addEventListener('mousemove', function(evt) {
+		var x = canvas.width/2-120, y = canvas.height/2-72,
+			mousePos = getMousePos(canvas, evt);
+		if(!alive && mousePos.x > x && mousePos.x < x + 200 && mousePos.y > y && mousePos.y < y + 120){	
+			canvas.style.cursor = "pointer";
+			within = true;
+		}else{
+			canvas.style.cursor = "default";
+			within = false;
+		}
+	}, false);	
 	(function draw() {
 		requestAnimationFrame(draw);
 		context.clearRect(0, 0, canvas.width, canvas.height);
@@ -84,6 +125,10 @@ window.addEventListener('load', function() {
 		if(document.activeElement === canvas && alive){
 			velocity += gravity;
 			player.y += velocity;
+			if(objects.length < 1){
+				objects.push(new object(imgs[8], canvas.width, 0, 2.5, 59, canvas.height));
+				next = objects[0];
+			}
 		}
 		for(var item in backgrounds)
 			backgrounds[item].draw();
@@ -92,18 +137,55 @@ window.addEventListener('load', function() {
 			if(objects[item].x - offset + objects[item].w < 0)
 				delete objects[item];
 			else{ 
-				console.log(objects[item].x - offset);
-				if(objects[item].x - offset - objects[item].w/2 <= canvas.width/2 && !objects[item].spawned && alive){
+				if(objects[item].x - offset + objects[item].w <= canvas.width/2 && !objects[item].spawned && alive){
 					objects.push(new object(imgs[8+ Math.floor(Math.random()*3)], canvas.width, 0, 2.5, 59, canvas.height))
+					next = objects[1];
 					objects[item].spawned = true;
+					score++;
 				}
 				objects[item].draw();
 			}
 		}
-		if(player.y + velocity < 0)
+		if(next && alive){
+			var offset = (tick - next.t) * next.depth;
+			if(player.x + 60 > next.x - offset && player.x + 60 < next.x - offset + next.w){
+				console.log(next.fill)
+				switch(next.fill){
+					case imgs[8]:
+						if(player.y > 200)
+							died();
+						break;
+					case imgs[9]:
+						if(player.y  < 200 || player.y > 350)
+							died();
+						break;
+					case imgs[10]:
+						if(player.y  < 350)
+							died();
+						break;
+					default: break;
+				}
+			}
+		}
+		if(player.y < 0){
+			player.y = 0;
 			velocity = gravity;
-		if(player.y + player.h >= canvas.height-68)
-			alive = false;
+		}
+		if(player.y + player.h >= canvas.height-68 && alive)
+			died();
 		player.draw();
+		if(!alive){
+			if(within) objects[1].draw();
+			else  next.draw();
+		}
+		
+		context.font = "40px Sans-serif"
+		context.strokeStyle = 'black';
+		context.lineWidth = 8;
+		context.strokeText('Best: ' + best, 10, 45);
+		context.strokeText('Last: ' + last, 10, 90);
+		context.fillStyle = 'white';
+		context.fillText('Best: ' + best, 10, 45);
+		context.fillText('Last: ' + last, 10, 90);
 	})();
 }); 
