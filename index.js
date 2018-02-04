@@ -1,18 +1,23 @@
 window.addEventListener('load', function() {
 	var canvas = document.getElementsByTagName("canvas")[0],
 		context = canvas.getContext('2d');
-	var grid = new Image();
-	grid.src = 'mountainnew.png';
-
-	var tree = new Image();
-	tree.src = 'grass1.png';
-
-	var tree2 = new Image();
-	tree2.src = 'grass2.png';
+		
+	var imgs = [];
+	function addImage(src){
+		var tmp = new Image();
+		tmp.src = src;
+		imgs.push(tmp);
+	}
+	addImage('bird.png');			//0
+	addImage('mountainnew.png');	//1
+	addImage('grass2.png');			//2
+	addImage('forest3.png');		//3	
+	addImage('forest1.png');		//4
+	addImage('floor.png');			//5
+	addImage('rocks.png');			//6
+	addImage('forest4.png');		//7
+	addImage('totem1.png');			//8
 	
-	var bird = new Image();
-	bird.src = 'bird.png';
-
 	var tick = 0;
 	class object{
 		constructor(fill, x, y, depth, w, h){
@@ -33,8 +38,8 @@ window.addEventListener('load', function() {
 		context.drawImage(this.fill, this.x - offset, this.y, this.w, this.h);
 	}
 	class background extends object{
-		constructor(fill, depth){
-			super(fill,0,0,depth,0,0);
+		constructor(index, depth){
+			super(imgs[index],0,0,depth,0,0);
 		}
 	}
 	background.prototype.draw = function(){
@@ -49,11 +54,17 @@ window.addEventListener('load', function() {
 		context.translate(offset,0);
 	}
 	var objects = [];
-	objects.push(new background(grid, 4));
-	objects.push(new background(tree2, 3));
-	objects.push(new background(tree, 2));
+	objects.push(new background(1, 4));		//mountain
+	objects.push(new background(2, 3));		//grass
+	objects.push(new background(7, 2.9));	//forest4
+	objects.push(new background(3, 2.5));	//forest3
+	objects.push(new background(6, 2.25));	//rocks
+	objects.push(new background(5, 2));		//forest1
+	objects.push(new background(4, 2));		//floor
 	
-	var player = new object(bird, canvas.width/2 - 25, canvas.height/2 - 25, 0, 50, 50);
+	objects.push(new object(imgs[8], canvas.width, 0, 1, 59, canvas.height))
+	
+	var player = new object(imgs[0], canvas.width/2 - 25, canvas.height/2 - 25, 0, 50, 50);
 	
 	(function draw() {
 		requestAnimationFrame(draw);
