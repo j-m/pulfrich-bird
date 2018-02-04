@@ -76,4 +76,4 @@ window.addEventListener('load', function() {
 		
 		player.draw();
 	})();
-});
+}); 
