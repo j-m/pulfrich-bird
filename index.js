@@ -127,7 +127,7 @@ window.addEventListener('load', function() {
 			player.y += velocity;
 			if(objects.length < 1){
 				objects.push(new object(imgs[8], canvas.width, 0, 2.5, 59, canvas.height));
-				next = objects[0];
+				next = 0;
 			}
 		}
 		for(var item in backgrounds)
@@ -139,18 +139,17 @@ window.addEventListener('load', function() {
 			else{ 
 				if(objects[item].x - offset + objects[item].w <= canvas.width/2 && !objects[item].spawned && alive){
 					objects.push(new object(imgs[8+ Math.floor(Math.random()*3)], canvas.width, 0, 2.5, 59, canvas.height))
-					next = objects[1];
+					next++;
 					objects[item].spawned = true;
 					score++;
 				}
 				objects[item].draw();
 			}
 		}
-		if(next && alive){
-			var offset = (tick - next.t) * next.depth;
-			if(player.x + 60 > next.x - offset && player.x + 60 < next.x - offset + next.w){
-				console.log(next.fill)
-				switch(next.fill){
+		if(objects[next] && alive){
+			var offset = (tick - objects[next].t) * objects[next].depth;
+			if(player.x + 60 > objects[next].x - offset && player.x + 60 < objects[next].x - offset + objects[next].w){
+				switch(objects[next].fill){
 					case imgs[8]:
 						if(player.y > 200)
 							died();
@@ -176,7 +175,7 @@ window.addEventListener('load', function() {
 		player.draw();
 		if(!alive){
 			if(within) objects[1].draw();
-			else  next.draw();
+			else  objects[0].draw();
 		}
 		
 		context.font = "40px Sans-serif"
@@ -187,5 +186,8 @@ window.addEventListener('load', function() {
 		context.fillStyle = 'white';
 		context.fillText('Best: ' + best, 10, 45);
 		context.fillText('Last: ' + last, 10, 90);
+		context.font = "85px Sans-serif";
+		context.strokeText(score, 10, canvas.height - 20);	
+		context.fillText(score, 10, canvas.height - 20);		
 	})();
 }); 
