@@ -15,19 +15,19 @@ window.addEventListener('load', function () {
 		tmp.src = src;
 		imgs.push(tmp);
 	}
-	addImage('bird.png'); //0
-	addImage('mountainnew.png'); //1
-	addImage('grass2.png'); //2
-	addImage('forest3.png'); //3	
-	addImage('forest1.png'); //4
-	addImage('floor.png'); //5
-	addImage('rocks.png'); //6
-	addImage('forest4.png'); //7
-	addImage('totem2.png'); //8
-	addImage('totem1.png'); //9
-	addImage('totem3.png'); //10
-	addImage('retry1.png'); //11
-	addImage('retry2.png'); //12
+	addImage('images/bird.png'); //0
+	addImage('images/mountainnew.png'); //1
+	addImage('images/grass2.png'); //2
+	addImage('images/forest3.png'); //3	
+	addImage('images/forest1.png'); //4
+	addImage('images/floor.png'); //5
+	addImage('images/rocks.png'); //6
+	addImage('images/forest4.png'); //7
+	addImage('images/totem2.png'); //8
+	addImage('images/totem1.png'); //9
+	addImage('images/totem3.png'); //10
+	addImage('images/retry1.png'); //11
+	addImage('images/retry2.png'); //12
 
 	var tick = 0;
 	class object {
